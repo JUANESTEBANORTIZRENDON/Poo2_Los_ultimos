@@ -13,3 +13,5 @@ circulo = Circulo(perimetro=0, radio=4)  # El perímetro no lo usamos aquí para
 print(f"Área del cuadro: {cuadro.calcular_area()} cm²")
 print(f"Área del triángulo: {triangulo.calcular_area()} cm²")
 print(f"Área del círculo: {circulo.calcular_area():.2f} cm²")
+#modificacio n
+
