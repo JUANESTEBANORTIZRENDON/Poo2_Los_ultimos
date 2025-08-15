@@ -1,5 +1,4 @@
 """
-Módulo: numeros/romano.py
 NumeroRomano:
 - Entrada y salida en números romanos (I, V, X, L, C) → rango 1..100.
 - En la calculadora: si el operando izquierdo es romano, SOLO se permite la suma.

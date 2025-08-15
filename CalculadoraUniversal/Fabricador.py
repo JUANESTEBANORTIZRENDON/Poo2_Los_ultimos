@@ -1,7 +1,6 @@
-"""
-Módulo: fabrica.py
-Crea instancias desde texto "tipo:valor" (incluye romanos: 'rom').
-"""
+
+#Crea instancias desde texto "tipo:valor" (incluye romanos: 'rom').
+
 
 from Decimales import NumeroDecimal
 from Binario import NumeroBinario

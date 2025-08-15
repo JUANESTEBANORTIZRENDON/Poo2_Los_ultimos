@@ -1,7 +1,6 @@
-"""
-Módulo: numeros/octal.py
-NumeroOctal: enteros en base 8 (acepta signo '-').
-"""
+
+#NumeroOctal: enteros en base 8 (acepta signo '-').
+
 
 from NumeroUniversal import NumeroUniversal, es_entero, a_entero
 
@@ -17,6 +16,7 @@ class NumeroOctal(NumeroUniversal):
         if texto.startswith("-"):
             negativo = True; texto = texto[1:]
 
+        #Validacion si esta en octal  octal 
         if len(texto) == 0 or any(ch not in "01234567" for ch in texto):
             self.valido = False; self.mensaje_error = "Octal inválido"; return
 

@@ -1,5 +1,4 @@
 """
-Módulo: numeros/hexadecimal.py
 NumeroHexadecimal: enteros en base 16 (acepta signo '-').
 """
 
@@ -10,7 +9,8 @@ class NumeroHexadecimal(NumeroUniversal):
         super().__init__(literal)
         self.tipo = "hex"
         self.analizar()
-
+        
+#Elimina espacios y lo que no sirve
     def analizar(self):
         texto = self.literal.strip().lower().replace("_", "")
         negativo = False
