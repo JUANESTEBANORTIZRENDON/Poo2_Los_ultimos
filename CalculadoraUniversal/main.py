@@ -1,96 +1,93 @@
-# =================
-# Archivo: main.py
-# =================
 """
-Punto de entrada con menú (estilo switch con if/elif).
-- Soporta tipos: dec, bin, oct, hex, rom (romano I..C).
-- Bucle para realizar varias operaciones hasta que el usuario decida salir.
+Menú con dos modos: Calculadora (cal) y Convertidor (con).
+Tipos: dec, bin, oct, hex, rom (I..C).
 """
 
 from Calculadora import Calculadora
 from Fabricador import crear_numero
 
-def seleccionar_tipo(tipo):
-    """Valida el tipo ingresado; retorna el tipo o '' si es inválido."""
-    if tipo in ("dec", "bin", "oct", "hex", "rom"):
-        return tipo
-    return ""
+def seleccionar_tipo(t):
+    return t if t in ("dec", "bin", "oct", "hex", "rom") else ""
 
 def seleccionar_operacion(op):
-    """Valida operación; retorna el símbolo o '' si es inválida."""
-    if op in ("+", "-", "*", "/"):
-        return op
-    return ""
+    return op if op in ("+", "-", "*", "/") else ""
 
 def ejecutar():
-    print("=== Calculadora Numérica Universal ===")
-    print('Para selecionar escribe el contenido interno de los parentesi exactamente igual de cada opcion correspondiente ')
-    print("Tipos: Decimal (dec),\n Binario (bin),\n Octal (oct),\n Hexadecimal (hex),\n Romano (rom )")
-    print('--------------------------------------------------------------------------------------------------')
-    print("Operaciones: +, -, *, /   (si el operando izquierdo es rom, solo +)")
-    print('--------------------------------------------------------------------------------------------')
+    print("=== Calculadora / Convertidor Numérico Universal ===")
+    print("Modos: cal (calculadora) | con (convertidor)")
 
     while True:
-        # Selección de tipo (mismo para ambos operandos, como pediste)
-        tipo_elegido = input("\nTipo de número para ambos operandos: ").strip().lower()
-        tipo_elegido = seleccionar_tipo(tipo_elegido)
-        if tipo_elegido == "":
-            print("ERROR: tipo inválido (usa dec/bin/oct/hex/rom)")
-            continue
+        modo = input("\nEscribe el modo (cal / con): ").strip().lower()
 
-        # Entrada de valores y operación
-        valor1 = input("Primer valor: ").strip()
-        valor2 = input("Segundo valor: ").strip()
-        operacion = input("Operación (+, -, *, /): ").strip()
-        operacion = seleccionar_operacion(operacion)
-        if operacion == "":
-            print("ERROR: operación inválida (usa +, -, *, /)")
-            continue
+        if modo == "cal":
+            tipo = seleccionar_tipo(input("Tipo para ambos operandos (dec/bin/oct/hex/rom): ").strip().lower())
+            if tipo == "": print("ERROR: tipo inválido"); continue
 
-        # Crear números
-        num1 = crear_numero(f"{tipo_elegido}:{valor1}")
-        num2 = crear_numero(f"{tipo_elegido}:{valor2}")
+            v1 = input("Primer valor: ").strip()
+            v2 = input("Segundo valor: ").strip()
+            op = seleccionar_operacion(input("Operación (+, -, *, /): ").strip())
+            if op == "": print("ERROR: operación inválida"); continue
 
-        # Calcular
-        calc = Calculadora()
-        resultado = calc.operar(num1, num2, operacion)
+            n1 = crear_numero(f"{tipo}:{v1}")
+            n2 = crear_numero(f"{tipo}:{v2}")
 
-        # Mostrar resultados
-        print("\n=== Resultados ===")
-        print("Operando 1:", num1)
-        print("Operando 2:", num2)
-        print("Resultado:", resultado)
+            calc = Calculadora()
+            res = calc.operar(n1, n2, op)
 
-        # Conversión opcional de resultado
-        convertir = input("\n¿Convertir resultado a otra base? (dec/bin/oct/hex/rom o Enter para omitir): ").strip().lower()
-        convertir = seleccionar_tipo(convertir)
-        if convertir != "":
-            # Imports locales para evitar dependencias si no se convierte
+            print("\n=== Resultados ===")
+            print("Operando 1:", n1)
+            print("Operando 2:", n2)
+            print("Resultado :", res)
+
+            dst = seleccionar_tipo(input("\n¿Convertir resultado? (dec/bin/oct/hex/rom o Enter): ").strip().lower())
+            if dst != "":
+                from Decimales import NumeroDecimal
+                from Binario import NumeroBinario
+                from Octal import NumeroOctal
+                from Hexadecimal import NumeroHexadecimal
+                from Romano import NumeroRomano
+
+                if dst == "dec": print("Convertido:", res.convertir_a(NumeroDecimal))
+                elif dst == "bin": print("Convertido:", res.convertir_a(NumeroBinario))
+                elif dst == "oct": print("Convertido:", res.convertir_a(NumeroOctal))
+                elif dst == "hex": print("Convertido:", res.convertir_a(NumeroHexadecimal))
+                elif dst == "rom": print("Convertido:", res.convertir_a(NumeroRomano))
+            else:
+                print("Conversión omitida.")
+
+        elif modo == "con":
+            print("\n=== MODO CONVERTIDOR ===")
+            tipo_src = seleccionar_tipo(input("Tipo del número a convertir (dec/bin/oct/hex/rom): ").strip().lower())
+            if tipo_src == "": print("ERROR: tipo inválido"); continue
+
+            val_src = input("Valor a convertir: ").strip()
+            num = crear_numero(f"{tipo_src}:{val_src}")
+            if not num.valido:
+                print("ERROR:", num.mensaje_error); continue
+
+            tipo_dst = seleccionar_tipo(input("¿Convertir a qué base? (dec/bin/oct/hex/rom): ").strip().lower())
+            if tipo_dst == "": print("ERROR: tipo destino inválido"); continue
+
             from Decimales import NumeroDecimal
             from Binario import NumeroBinario
             from Octal import NumeroOctal
             from Hexadecimal import NumeroHexadecimal
             from Romano import NumeroRomano
 
-            if convertir == "dec":
-                print("Convertido:", resultado.convertir_a(NumeroDecimal))
-            elif convertir == "bin":
-                print("Convertido:", resultado.convertir_a(NumeroBinario))
-            elif convertir == "oct":
-                print("Convertido:", resultado.convertir_a(NumeroOctal))
-            elif convertir == "hex":
-                print("Convertido:", resultado.convertir_a(NumeroHexadecimal))
-            elif convertir == "rom":
-                print("Convertido:", resultado.convertir_a(NumeroRomano))
-        else:
-            print("Conversión omitida.")
+            if tipo_dst == "dec": print("Convertido:", num.convertir_a(NumeroDecimal))
+            elif tipo_dst == "bin": print("Convertido:", num.convertir_a(NumeroBinario))
+            elif tipo_dst == "oct": print("Convertido:", num.convertir_a(NumeroOctal))
+            elif tipo_dst == "hex": print("Convertido:", num.convertir_a(NumeroHexadecimal))
+            elif tipo_dst == "rom": print("Convertido:", num.convertir_a(NumeroRomano))
 
-        # ¿otra operación?
-        seguir = input("\n¿Desea realizar otra operación? (s/n): ").strip().lower()
+        else:
+            print("Opción inválida. Escribe 'cal' o 'con'.")
+            continue
+
+        seguir = input("\n¿Desea realizar otra acción? (s/n): ").strip().lower()
         if seguir != "s":
-            print("Cerrando calculadora...")
+            print("Cerrando programa...")
             break
 
 if __name__ == "__main__":
     ejecutar()
-

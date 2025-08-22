@@ -1,28 +1,10 @@
 """
-Clase Padree 'NumeroUniversal' .
+Clase Padre 'NumeroUniversal'.
+Contiene utilidades como MÉTODOS de instancia: es_entero / a_entero.
+Todas las subclases usan self.es_entero(...) y self.a_entero(...).
 """
-#Validacion si es entero y el decimal 
-def es_entero(valor_decimal):
-    """Devuelve True si valor_decimal es (o está muy cerca de) un entero."""
-    if isinstance(valor_decimal, int):
-        return True
-    #Validamos decimal restandole el entero redondeado del numero y si se puede aproximar se aproxima al entero mas cercanaoo
-    if abs(valor_decimal - int(round(valor_decimal))) < 1e-9:
-        return True
-    return False
-
-#se convierte decimal float a entero 
-def a_entero(valor_decimal):
-    """Redondea un float casi entero a int."""
-    return int(round(valor_decimal))
-
 
 class NumeroUniversal:
-    """
-    Clase base para números de distintas bases.
-    Guarda: literal (texto original), flags de validez, valor_decimal (float),
-    etiqueta de tipo y si permite fracciones (solo decimal=True).
-    """
     def __init__(self, literal):
         self.literal = str(literal)
         self.valido = True
@@ -31,38 +13,49 @@ class NumeroUniversal:
         self.tipo = "base"
         self.permite_fraccion = False
 
-#Funsiones que se heredaran 
+    # ----- Métodos que implementan/usan las subclases -----
     def analizar(self):
-        """Subclases implementan: convertir literal a valor_decimal y validar."""
+        """Las subclases convierten self.literal -> self.valor_decimal y validan."""
         pass
 
     def a_cadena_base_propia(self, valor_decimal):
-        """
-        Convierte un valor decimal canónico (float/int) a texto en su base.
-        Las subclases lo sobreescriben.
-        """
+        """Las subclases formatean el valor_decimal a su base."""
         return str(valor_decimal)
 
     def convertir_a(self, clase_destino):
         """
-        Convierte a otra clase de número.
-        Si el destino no permite fracciones y el valor no es entero -> devuelve Decimal.
+        Convierte este número a 'clase_destino'.
+        Si el destino no permite fracciones y el valor no es entero -> regresa Decimal.
         """
-        numero = clase_destino("0")
-        if not numero.permite_fraccion:
-            if not es_entero(self.valor_decimal):
-                from NumeroUniversal import NumeroDecimal
+        numero_dest = clase_destino("0")
+
+        if not numero_dest.permite_fraccion:
+            if not self.es_entero(self.valor_decimal):
+                # IMPORTA DESDE TU MÓDULO DE DECIMALES
+                from Decimales import NumeroDecimal
                 d = NumeroDecimal("0")
                 d.valor_decimal = self.valor_decimal
                 return d
 
-        texto = numero.a_cadena_base_propia(self.valor_decimal)
-        numero = clase_destino(texto)
-        numero.valor_decimal = self.valor_decimal
-        return numero
+        texto_en_destino = numero_dest.a_cadena_base_propia(self.valor_decimal)
+        convertido = clase_destino(texto_en_destino)
+        convertido.valor_decimal = self.valor_decimal
+        return convertido
 
-#metodo en caso de que el valor no sea valido 
     def __str__(self):
         if not self.valido:
             return "ERROR: " + self.mensaje_error
         return self.a_cadena_base_propia(self.valor_decimal) + " (" + self.tipo + ")"
+
+    # ----- Utilidades para las subclases -----
+    def es_entero(self, valor_decimal):
+        """True si valor_decimal es (o está muy cerca de) un entero."""
+        if isinstance(valor_decimal, int):
+            return True
+        if abs(valor_decimal - round(valor_decimal)) < 1e-9:
+            return True
+        return False
+
+    def a_entero(self, valor_decimal):
+        """Redondea un float 'casi entero' a int."""
+        return int(round(valor_decimal))
